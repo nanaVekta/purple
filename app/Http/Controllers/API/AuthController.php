@@ -22,10 +22,49 @@ class AuthController extends Controller
     }
 
     /**
-     * Register user.
-     *
-     * @param  \Illuminate\Http\Request  $request - User's details
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Post(
+     *      path="/auth/register",
+     *      operationId="registerUser",
+     *      tags={"Authentication"},
+     *      summary="Create new user",
+     *      description="Returns user data",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          description="User data",
+     *          @OA\MediaType(
+     *              mediaType="multipart/form-data",
+     *              @OA\Schema(
+     *                  @OA\Property(property="name", type="string", example="John Doe"),
+     *                  @OA\Property(property="email", type="string", example="email@mail.com"),
+     *                  @OA\Property(property="password", type="string", example="qwertyuiop"),
+     *                  @OA\Property(property="password_confirmation", type="string", example="qwertyuiop"),
+     *              ),
+     *          ),
+     *          @OA\JsonContent(
+     *              required={"name", "email", "password", "password_confirmation"},
+     *              @OA\Property(property="name", type="string", example="John Doe"),
+     *              @OA\Property(property="email", type="string", example="email@mail.com"),
+     *              @OA\Property(property="password", type="string", example="qwertyuiop"),
+     *              @OA\Property(property="password_confirmation", type="string", example="qwertyuiop"),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="User successfully registered"),
+     *              @OA\Property(property="user", type="string", example="'user': {'id': 1, 'name': 'Hello world','email': 'test@one.com','email_verified_at': null,'created_at': '2022-05-26T06:56:01.000000Z','updated_at': '2022-05-26T07:12:19.000000Z'}"),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Validation error"
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      */
     public function register(Request $request)
     {
@@ -36,7 +75,7 @@ class AuthController extends Controller
         ]);
 
         if($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $user = User::create([
@@ -51,13 +90,48 @@ class AuthController extends Controller
         ], 201);
     }
 
-
-
     /**
-     * login user
+     * @OA\Post(
+     *      path="/auth/login",
+     *      operationId="loginUser",
+     *      tags={"Authentication"},
+     *      summary="User login",
+     *      description="Returns auth token",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          description="User's credentials",
+     *          @OA\MediaType(
+     *              mediaType="multipart/form-data",
+     *              @OA\Schema(
+     *                  @OA\Property(property="email", type="string", example="email@mail.com"),
+     *                  @OA\Property(property="password", type="string", example="qwertyuiop"),
+     *              ),
+     *          ),
+     *          @OA\JsonContent(
+     *              required={"email", "password"},
+     *              @OA\Property(property="email", type="string", example="email@mail.com"),
+     *              @OA\Property(property="password", type="string", example="qwertyuiop"),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="access_token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL3YxL2F1dGgvbG9naW4iLCJpYXQiOjE2NTM1NDg0MTksImV4cCI6MTY1MzU1MjAxOSwibmJmIjoxNjUzNTQ4NDE5LCJqdGkiOiI2YVRQbjNZQ0s0TjBmUHBMIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.dmSdqHyunFqKOcMXDJ8kjwZP1kQQboEqqW21pIu4JhU"),
+     *              @OA\Property(property="token_type", type="string", example="bearer"),
+     *              @OA\Property(property="expires_in", type="integer", example="3600"),
      *
-     * @param \Illuminate\Http\Request  $request - User's email and password
-     * @return \Illuminate\Http\JsonResponse
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Validation error"
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      */
     public function login(Request $request)
     {
@@ -78,13 +152,29 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout user
+     * @OA\Post(
+     *      path="/auth/logout",
+     *      operationId="logotUser",
+     *      tags={"Authentication"},
+     *      summary="User logout",
+     *      description="Logout user",
+     *      @OA\Response(
+     *          response=201,
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="User successfully logged out"),
      *
-     * @return \Illuminate\Http\JsonResponse
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      */
     public function logout()
     {
-        auth()->logout();
+        Auth::logout();
 
         return response()->json(['message' => 'User successfully logged out.']);
     }
@@ -100,9 +190,24 @@ class AuthController extends Controller
     }
 
     /**
-     * Get user profile.
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Get(
+     *      path="/auth/profile",
+     *      operationId="userProfile",
+     *      tags={"Users"},
+     *      summary="Get authenticated user's profile",
+     *      description="Returns user data",
+     *      @OA\Response(
+     *          response=201,
+     *          description="Success",
+     *          @OA\JsonContent(
+     *               @OA\Property(property="user", type="string", example="{'id': 1, 'name': 'Hello world','email': 'test@one.com','email_verified_at': null,'created_at': '2022-05-26T06:56:01.000000Z','updated_at': '2022-05-26T07:12:19.000000Z'}"),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      */
     public function profile()
     {
