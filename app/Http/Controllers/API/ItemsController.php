@@ -60,7 +60,7 @@ class ItemsController extends Controller
 
         $user_id = Auth::user()->id;
 
-        $check_user_has_item = Items::where('user_id', $user_id)->count();
+        $check_user_has_item = Items::where('users_id', $user_id)->count();
 
         if($check_user_has_item > 0){
             return response()->json([
