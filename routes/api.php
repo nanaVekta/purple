@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ItemsController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\BidsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +35,11 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::prefix('items')->group(function() {
-        Route::post('/create', [UserController::class, 'createItem']);
+        Route::post('/create', [ItemsController::class, 'createItem']);
+    });
+
+    Route::prefix('bids')->group(function() {
+        Route::post('/create', [BidsController::class, 'createBid']);
+        Route::post('/make-bid', [BidsController::class, 'makeBid']);
     });
 });

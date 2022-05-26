@@ -19,7 +19,41 @@ class ItemsController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function createItem(Request $request)
+    /**
+     * @OA\Post(
+     *      path="/items/create",
+     *      operationId="createItems",
+     *      tags={"Items"},
+     *      summary="Create items",
+     *      description="Return created items",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Items successfully created"),
+     *              @OA\Property(property="items", type="array", @OA\Items(
+     *                  @OA\Property(property="name", type="string", example="Item 1"),
+     *                  @OA\Property(property="value", type="integer", example="100"),
+     *              )),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthorized",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized"),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Already have an item",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="You already have an item"),
+     *          ),
+     *      ),
+     * )
+     */
+    public function createItem()
     {
 
         $item_names = array('Water', 'Shirt', 'Pants', 'Dogs', 'BE Developer', 'Soup');
@@ -44,7 +78,7 @@ class ItemsController extends Controller
                 'item_value' => $item_value,
             ]);
             $item = new Items;
-            $item->user_id = $user_id;
+            $item->users_id = $user_id;
             $item->name = $item_name;
             $item->value = $item_value;
             $item->save();

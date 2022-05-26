@@ -27,4 +27,9 @@ class Items extends Model
     {
         return $this->belongsTo('App\Models\User');
     }
+
+    public function bids()
+    {
+        return $this->hasOne('App\Models\Bids');
+    }
 }
